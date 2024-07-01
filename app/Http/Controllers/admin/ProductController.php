@@ -50,22 +50,25 @@ class ProductController extends Controller
 
         if($validator->passes()){
 
-            $product = new Product();
-            $product->title = $req->title;
-            $product->slug = $req->slug; 
-            $product->description = $req->description; 
-            $product->price = $req->price; 
-            $product->compare_price = $req->compare_price; 
-            $product->sku = $req->sku; 
-            $product->barcode = $req->barcode; 
-            $product->track_qty = $req->track_qty; 
-            $product->qty = $req->qty; 
-            $product->status = $req->status; 
-            $product->category_id = $req->category; 
-            $product->sub_category_id = $req->sub_category; 
-            $product->brand_id = $req->brand; 
-            $product->is_featured = $req->is_featured; 
-            $product->save();
+        $product = new Product();
+        $product->title = $req->title;
+        $product->slug = $req->slug; 
+        $product->description = $req->description;
+        $product->short_description = $req->short_description; 
+        $product->price = $req->price; 
+        $product->compare_price = $req->compare_price; 
+        $product->sku = $req->sku; 
+        $product->barcode = $req->barcode; 
+        $product->track_qty = $req->track_qty; 
+        $product->qty = $req->qty; 
+        $product->status = $req->status; 
+        $product->category_id = $req->category; 
+        $product->sub_category_id = $req->sub_category; 
+        $product->brand_id = $req->brand; 
+        $product->is_featured = $req->is_featured; 
+        $product->shipping_return = $req->shipping_return; 
+        $product->related_products = (!empty($req->related_products) ? implode(',', $req->related_products) : '');
+        $product->save();
 
             // Save Gallery Pics
             if(!empty($req->image_array)){
@@ -104,7 +107,7 @@ class ProductController extends Controller
                 $destPath = public_path(). '/uploads/product/small/'. $imageName;
                 $manager = new ImageManager(new Driver());
                 $image = $manager->read($sourcePath);
-                $image->resizeDown(300, 300);    
+                $image->resize(300, 220);    
                 $image->save($destPath);
                 }
             }
@@ -153,11 +156,19 @@ class ProductController extends Controller
         $categories = Category::orderBy('name', 'ASC')->get();
         $brands = Brand::orderBy('name', 'ASC')->get();
 
+        $relatedProducts = [];
+        if(!empty($product->related_products)){
+            $relatedArrayId = explode(',', $product->related_products);
+            $relatedProducts = Product::whereIn('id', $relatedArrayId)->get();   // return an array of records
+        }
+
+
         $data['categories'] = $categories;
         $data['brands'] = $brands;
         $data['subcategories'] = $subcategories;
         $data['product'] = $product;
         $data['productImages'] = $productImages;
+        $data['relatedProducts'] = $relatedProducts;
 
         return view('admin.products.edit', $data);
     }
@@ -192,21 +203,24 @@ class ProductController extends Controller
         if($validator->passes()){
 
             // $product = new Product();
-            $product->title = $req->title;
-            $product->slug = $req->slug; 
-            $product->description = $req->description; 
-            $product->price = $req->price; 
-            $product->compare_price = $req->compare_price; 
-            $product->sku = $req->sku; 
-            $product->barcode = $req->barcode; 
-            $product->track_qty = $req->track_qty; 
-            $product->qty = $req->qty; 
-            $product->status = $req->status; 
-            $product->category_id = $req->category; 
-            $product->sub_category_id = $req->sub_category; 
-            $product->brand_id = $req->brand; 
-            $product->is_featured = $req->is_featured; 
-            $product->save();
+        $product->title = $req->title;
+        $product->slug = $req->slug; 
+        $product->description = $req->description; 
+        $product->short_description = $req->short_description; 
+        $product->price = $req->price; 
+        $product->compare_price = $req->compare_price; 
+        $product->sku = $req->sku; 
+        $product->barcode = $req->barcode; 
+        $product->track_qty = $req->track_qty; 
+        $product->qty = $req->qty; 
+        $product->status = $req->status; 
+        $product->category_id = $req->category; 
+        $product->sub_category_id = $req->sub_category; 
+        $product->brand_id = $req->brand; 
+        $product->is_featured = $req->is_featured; 
+        $product->shipping_return = $req->shipping_return; 
+        $product->related_products = (!empty($req->related_products) ? implode(',',$req->related_products) : '' ); 
+        $product->save();
 
             // Save Gallery Pics
             
@@ -255,6 +269,23 @@ class ProductController extends Controller
             'message' => 'Data Deleted SuccessFully!'
         ]);
         
+    }
+
+    public function getProducts(Request $req){
+        $relatedProducts = [];
+        if($req->term != ''){
+            $products = Product::where('title', 'like','%'.$req->term.'%')->get();
+            if($products != ''){
+                foreach($products as $product){
+                $relatedProducts[] = array('id' => $product->id, 'text' => $product->title);
+                }
+            }
+        }
+        // print_r($relatedProducts);
+        return response()->json([
+            'tags' => $relatedProducts,
+            'status' => true
+        ]);
     }
 
 }

@@ -83,4 +83,21 @@ class ShopController extends Controller
             'sort'=>$req->get('sort'),
         ]);
     }
+
+    public function product($slug){
+        // echo $slug;
+        $product = Product::where('slug',$slug)->with('product_images')->first();
+        // dd($product);
+    if(empty($product)){
+        abort(404);
+    }
+
+    $relatedProducts = [];
+    if(!empty($product->related_products)){
+        $relatedArrayId = explode(',', $product->related_products);
+        $relatedProducts = Product::whereIn('id', $relatedArrayId)->get(); 
+    }
+
+    return view('front.product', ['product' => $product, 'relatedProducts' => $relatedProducts]);
+}
 }

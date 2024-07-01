@@ -73,7 +73,7 @@ class CategoryController extends Controller
                 $dPath = public_path().'/uploads/category/thumb/'.$newImageName;
                 $manager = new ImageManager(new Driver());
                 $image = $manager->read($sPath);
-                $image->scale(width:450, height:600);
+                $image->resize(300, 220);
                 $image->save($dPath);
 
                 $category->image = $newImageName;
@@ -96,9 +96,9 @@ class CategoryController extends Controller
         }
     }
 
-    public function edit($categortId, Request $req){
+    public function edit($categoryId, Request $req){
         // echo $categortId;
-        $category = Category::find($categortId);
+        $category = Category::find($categoryId);
         if(empty($category)){
             $req->session()->flash('error', 'Record Not Found!');
             return redirect()->route('categories.index');
@@ -156,7 +156,7 @@ class CategoryController extends Controller
                 $dPath = public_path().'/uploads/category/thumb/'.$newImageName;
                 $manager = new ImageManager(new Driver());
                 $image = $manager->read($sPath);
-                $image->scale(width:450);
+                $image->resize(300, 220);
                 $image->save($dPath);
 
                 $category->image = $newImageName;

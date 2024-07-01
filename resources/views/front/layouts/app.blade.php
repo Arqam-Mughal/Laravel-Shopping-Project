@@ -33,6 +33,8 @@
 	<meta name="twitter:image" content="" />
 	<meta name="twitter:image:alt" content="" />
 	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="csrf-token" content="{{ csrf_token() }}">
+
 
 
 	<link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/slick.css') }}" />
@@ -130,7 +132,7 @@
 					</ul>
 				</div>
 				<div class="right-nav py-0">
-					<a href="cart.php" class="ml-3 d-flex pt-2">
+					<a href="{{ route('front.cart') }}" class="ml-3 d-flex pt-2">
 						<i class="fas fa-shopping-cart text-primary"></i>
 					</a>
 				</div>
@@ -198,6 +200,10 @@
 	<script src="{{ asset('front-assets/js/slick.min.js') }}"></script>
 	<script src="{{ asset('front-assets/js/custom.js') }}"></script>
 	<script src="{{ asset('front-assets/js/ion.rangeSlider.min.js') }}"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.28/sweetalert2.all.js" integrity="sha512-cD1xrn0N1tV0ze8axCp+noWgxMFlWVg22HBXUfowicWhJsnAcSXNKnwI77Bkn3yLyqGvwZ/a8M2PtOjVp5vMaw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.28/sweetalert2.all.js"></script>
+
 	<script>
 		window.onscroll = function() {myFunction()};
 
@@ -210,6 +216,69 @@ function myFunction() {
   } else {
     navbar.classList.remove("sticky");
   }
+}
+
+$.ajaxSetup({
+		headers: {
+			'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+		}
+		});
+
+
+		function addToCart(id){
+    // alert(id);
+
+    $.ajax({
+        url: '{{ route("front.addtocart") }}',
+        method: 'POST',
+        data: {id},
+        dataType: 'json',
+        success:function (res){
+
+            if(res['status'] == true){
+                const Toast = Swal.mixin({
+					toast: true,
+					position: 'top-end',
+					showConfirmButton: false,
+					timer: 3000,
+					timerProgressBar: true,
+					didOpen: (toast) => {
+						toast.addEventListener('mouseenter', Swal.stopTimer)
+						toast.addEventListener('mouseleave', Swal.resumeTimer)
+					}
+					})
+
+					Toast.fire({
+					icon: 'success',
+						title: res['message']
+					});
+                    setTimeout(() => {
+						window.location.href= "{{ route('front.cart') }}";
+					}, 1500);
+       
+            }else{
+                const Toast = Swal.mixin({
+					toast: true,
+					position: 'top-end',
+					showConfirmButton: false,
+					timer: 3000,
+					timerProgressBar: true,
+					didOpen: (toast) => {
+						toast.addEventListener('mouseenter', Swal.stopTimer)
+						toast.addEventListener('mouseleave', Swal.resumeTimer)
+					}
+					})
+
+					Toast.fire({
+					icon: 'warning',
+						title: res['message']
+					})                   
+            }
+
+        }, error : function(jqXHR, exception){
+            console.log('Something went wrong!');
+        }
+    });
 }
 	</script>
 

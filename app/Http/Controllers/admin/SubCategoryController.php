@@ -51,11 +51,11 @@ class SubCategoryController extends Controller
             $subcategory->showhome = $req->showhome;
             $subcategory->save();
 
-            $req->session()->flash('success','Sub Category Updated SuccessFully!');
+            $req->session()->flash('success','Sub Category Created SuccessFully!');
 
             return response([
                 'status' => true,
-                'message' => 'Sub Category Updated SuccessFully!'
+                'message' => 'Sub Category Created SuccessFully!'
             ]);
 
         } else{

@@ -15,6 +15,8 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\FrontController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\CartController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +35,13 @@ use App\Http\Controllers\ShopController;
 
 Route::get('/', [FrontController::class, 'index'])->name('front.home');
 Route::get('/shop/{categorySLug?}/{subCategorySlug?}', [ShopController::class, 'index'])->name('front.shop');
+Route::get('/product/{slug}', [ShopController::class, 'product'])->name('front.product');
+
+// cart routes
+Route::get('/cart', [CartController::class, 'cart'])->name('front.cart');
+Route::post('/add-to-cart', [CartController::class, 'addToCart'])->name('front.addtocart');
+Route::post('/update-cart', [CartController::class, 'updateCart'])->name('front.updateCart');
+Route::post('/delete-cart', [CartController::class, 'deleteCart'])->name('front.deleteCart');
 
 Route::group(['prefix' => 'admin'], function(){
     Route::group(['middleware' => 'admin.guest'], function(){
@@ -63,7 +72,6 @@ Route::group(['middleware' => 'admin.auth'], function(){
     Route::delete('/sub_categories/{category}', [SubCategoryController::class, 'destroy'])->name('sub_categories.delete');
 
     // Brand Routes
-
     Route::get('/brands/create', [BrandController::class, 'create'])->name('brands.create');
     Route::post('/brands/store', [BrandController::class, 'store'])->name('brands.store');
     Route::get('/brands', [BrandController::class, 'index'])->name('brands.index');
@@ -79,6 +87,7 @@ Route::group(['middleware' => 'admin.auth'], function(){
     Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
     Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.delete');
+    Route::get('/getProducts', [ProductController::class, 'getProducts'])->name('getProducts');
 
     Route::post('/product-images/update', [ProductImageController::class, 'update'])->name('product-images.update');
     Route::delete('/product-images', [ProductImageController::class, 'destroy'])->name('product-images.delete');

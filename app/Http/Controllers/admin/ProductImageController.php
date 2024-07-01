@@ -43,7 +43,7 @@ class ProductImageController extends Controller
                 $destPath = public_path(). '/uploads/product/small/'. $imageName;
                 $manager = new ImageManager(new Driver());
                 $image = $manager->read($sourcePath);
-                $image->resizeDown(300, 300);    
+                $image->resize(300, 220);    
                 $image->save($destPath);
 
                 return response()->json([

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\TempImage;
 use Illuminate\Http\Request;
-use Intervention\Image\ImageManager;
+use Intervention\Image\ImageManager;        // composer require intervention/image , php artisan:config:cache
 use Intervention\Image\Drivers\Gd\Driver;
 
 class TempImagesController extends Controller
@@ -29,8 +29,7 @@ class TempImagesController extends Controller
 
                 $manager = new ImageManager(new Driver());
                 $image = $manager->read($sourcePath);
-                // $image->scale(width:300, height:300);
-                $image->resizeDown(300, 300);
+                $image->resize(300, 220);    
                 $image->save($destPath);
 
             return response()->json([

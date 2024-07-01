@@ -42,6 +42,15 @@
                                             <p class="error"></p>
                                     </div>
                                 </div>
+
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                    <label for="short_description">Short_Description</label>
+                                    <textarea name="short_description" id="short_description" cols="30" rows="10"
+                                            class="summernote"></textarea>
+                                    </div>
+                                </div>
+
                                 <div class="col-md-12">
                                     <div class="mb-3">
                                         <label for="description">Description</label>
@@ -49,6 +58,16 @@
                                             class="summernote" placeholder="Description"></textarea>
                                     </div>
                                 </div>
+
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                    <label for="shipping_return">Shipping and Description</label>
+                                    <textarea name="shipping_return" id="shipping_return" cols="30" rows="10"
+                                            class="summernote" ></textarea>
+                                    </div>
+                                </div>
+
+
                             </div>
                         </div>
                     </div>
@@ -199,6 +218,18 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h2 class="h4 mb-3">Related product</h2>
+                            <div class="mb-3">
+                                <select multiple name="related_products[]" id="related_products" class="related-products w-100">
+
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -216,6 +247,22 @@
 
 @section('customJs')
 <script>
+
+$('.related-products').select2({
+    ajax: {
+        url: '{{ route("getProducts") }}',
+        dataType: 'json',
+        tags: true,
+        multiple: true,
+        minimumInputLength: 3,
+        processResults: function (data) {
+            return {
+                results: data.tags
+            };
+        }
+    }
+}); 
+
     $('#title').change(function(){
   var element = $(this);
   $("button[type=submit]").prop('disabled', true);
